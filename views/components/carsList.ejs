@@ -1,0 +1,31 @@
+<br />
+<h2>CARS</h2>
+<div class="row g-3">
+  <% for (let car of cars) { %>
+
+  <div class="col-4">
+    <div class="card p-1">
+      <h5 class="card-title"><%= car.title %></h5>
+      <div class="card-text">
+        <div>Car: <%= car.model +" "+'('+ car.car_id+')'%> </div>
+        <div>Color: <%= car.color %></div>
+        <div><%= car.rental_status %></div>
+        
+        <div>
+          <a
+            class="btn btn-outline-primary"
+            href="<%= '/carlist/' + car.carerence_id + '/edit' %>"
+            >Edit</a
+          >
+          <a
+            class="btn btn-outline-danger"
+            href="<%= '/carlist/' + car.carerence_id + '/delete' %>"
+            >Delete</a
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <% } %> <%- include("./pagination.ejs", { currentPage, lastPage }) %>
+</div>

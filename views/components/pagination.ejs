@@ -1,0 +1,36 @@
+
+<% if (lastPage > 1) { %>
+
+  <nav aria-label="Cars Pagination">
+    <ul class="pagination">
+      <li class="page-item">
+        <a class="page-link" href="<%= '/carlist/?page=' + (currentPage - 1) %>">Previous</a>
+      </li>
+      <li class="page-item">
+        <a class="page-link" href="<%= '/carlist/?page=' + 1 %>"><%= 1 %></a>
+      </li>
+      <li>...</li>
+
+      <% for(let p = Math.max(currentPage-5, 2);
+        p <= (currentPage+5);
+        p+=1) { %>
+        <li class="<%= 'page-item' + ( p === currentPage ? ' active' : '') %>">
+          <a class="page-link" href="<%= '/carlist/?page=' + p %>"><%= p %></a>
+        </li>
+      <% } %>
+
+      <li>...</li>
+      <li class="page-item">
+        <a class="page-link" href="<%= '/carlist/?page=' + lastPage %>"
+          ><%= lastPage %></a
+        >
+      </li>
+      <li class="page-item">
+        <a class="page-link" href="<%= '/carlist/?page=' + (currentPage + 1) %>">Next</a>
+      </li>
+    </ul>
+  </nav>
+<% } else { %>
+  <div>No pagination <%= lastPage %> </div>
+<% } %>
+
