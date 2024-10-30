@@ -12,3 +12,15 @@ body {
 .card:hover a, .card a:focus {
   opacity:  100;
 }
+
+.table-container {
+  max-height: 550px; /* Adjust this height as needed */
+  overflow-y: auto;
+}
+
+td, th {
+  text-align: center;
+  vertical-align: middle;
+}
+
+

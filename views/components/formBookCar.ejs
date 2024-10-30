@@ -1,82 +1,69 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<div class="container">
+    <h1 class="text-center mt-3 mb-3">Book a Car</h1>
 
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" 
-    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" 
-    crossorigin="anonymous">
+    <div class="card">
+        <div class="card-header">Select Car</div>
+        <div class="card-body">
+            <form action="/bookCar" method="POST" id="carForm">
+                <div class="mb-3">
+                    <select name="car_id" id="carSelect" class="form-control" required>
+                        <option value="" disabled selected>Choose a Car</option>
+                        <% availableCars.forEach(car => { %>
+                            <option value="<%= car.car_id %>"><%= car.car_id %> - <%= car.model %></option>
+                        <% }); %>
+                    </select>
+                </div>
 
-    <title>Car Rental Management</title>
-</head>
-<body>
-    <div class="container">
-        <h1 class="text-center text-primary mt-3 mb-3">Select and Book a Car</h1>
+                <div class="mb-3">
+                    <label for="make" class="form-label">Make:</label>
+                    <input type="text" name="make" id="make" class="form-control" readonly />
+                </div>
 
-        <div class="card">
-            <div class="card-header">Select Car</div>
-            <div class="card-body">
-                <form action="/bookCar" method="POST" id="carForm">
-                    <div class="mb-3">
-                        <label for="carSelect" class="form-label">Select Car:</label>
-                        <select name="car_id" id="carSelect" class="form-control" required>
-                            <option value="" disabled selected>Select a Car</option>
-                            <% availableCars.forEach(car => { %>
-                                <option value="<%= car.car_id %>"><%= car.car_id %> - <%= car.model %></option>
-                            <% }); %>
-                        </select>
-                    </div>
+                <div class="mb-3">
+                    <label for="color" class="form-label">Color:</label>
+                    <input type="text" name="color" id="color" class="form-control" readonly />
+                </div>
+                <div class="mb-3">
+                    <label for="price" class="form-label">Price:</label>
+                    <input type="text" name="price" id="price" class="form-control" readonly />
+                </div>
+                <div class="mb-3">
+                    <label for="customer" class="form-label">Customer ID:</label>
+                    <input type="text" name="customer_id" id="customer_id" class="form-control"/>
+                </div>
+                <div class="mb-3">
+                    <label for="start_date" class="form-label">From:</label>
+                    <input type="date" name="start_date" id="start_date" class="form-control"/>
+                </div>
+                <div class="mb-3">
+                    <label for="end_date" class="form-label">To:</label>
+                    <input type="date" name="end_date" id="end_date" class="form-control"/>
+                </div>
 
-                    <div class="mb-3">
-                        <label for="model" class="form-label">Model:</label>
-                        <input type="text" name="model" id="model" class="form-control" readonly />
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="make" class="form-label">Make:</label>
-                        <input type="text" name="make" id="make" class="form-control" readonly />
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="color" class="form-label">Color:</label>
-                        <input type="text" name="color" id="color" class="form-control" readonly />
-                    </div>
-
-                    <button type="submit" class="btn btn-primary w-100 mt-3">Book Car</button>
-                </form>
-            </div>
+                <button type="submit" class="btn btn-primary w-100 mt-3">Book Car</button>
+            </form>
         </div>
     </div>
+</div>
 
     
 
-    <script>
-        function _(element) {
-            return document.getElementById(element);
-        }
+<script>
+  function _(element) {
+      return document.getElementById(element);
+  }
 
-        const availableCars = JSON.parse('<%- JSON.stringify(availableCars) %>');
-        
-        _('carSelect').onchange = function () {
-            const selectedCarId = this.value;
-            console.log("selectedCarId: ", selectedCarId);
+  const availableCars = JSON.parse('<%- JSON.stringify(availableCars) %>');
+  console.log("availableCars", availableCars);
+  _('carSelect').onchange = function () {
+      const selectedCarId = this.value;
+      const selectedCar = availableCars.find(car => car.car_id == selectedCarId);
 
-            // Find the selected car from the available cars array
-            const selectedCar = availableCars.find(car => car.car_id == selectedCarId);
+      if (selectedCar) {
+          _('make').value = selectedCar.make;
+          _('color').value = selectedCar.color;
+          _('price').value = selectedCar.price;
 
-            if (selectedCar) {
-                _('model').value = selectedCar.model;
-                _('make').value = selectedCar.make;
-                _('color').value = selectedCar.color;
-
-            }
-        };
-    </script>
-
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
-</body>
-</html>
+      }
+  };
+</script>
