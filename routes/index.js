@@ -8,17 +8,21 @@ router.get("/", async function (req, res, next) {
   res.redirect("/carlist");
 });
 
-// http://localhost:3000/references?pageSize=24&page=3&q=John
+
 router.get("/carlist", async (req, res, next) => {
   const query = req.query.q || "";
   const page = +req.query.page || 1;
   const pageSize = +req.query.pageSize || 24;
   const msg = req.query.msg || null;
+  const success = req.query.success || null;
+  const error = req.query.error || null;
+
   try {
     let total = await myDb.getCarListCount(query);
     let cars = await myDb.getCarList(query, page, pageSize);
     let availableCars = await myDb.getAvailableCars();
-  
+    
+
     res.render("./pages/index", {
       cars,
       availableCars,
@@ -26,11 +30,37 @@ router.get("/carlist", async (req, res, next) => {
       msg,
       currentPage: page,
       lastPage: Math.ceil(total / pageSize),
+      success,
+      error,
     });
   } catch (err) {
     next(err);
   }
 });
+
+router.get("/carlist/:car_id/delete", async (req, res, next) => {
+  const car_id = req.params.car_id;
+  try {
+    const car = await myDb.getCarById(car_id);
+    if (car.rental_status == 'Rented')
+    {
+      res.redirect("/carlist/?error=Car is rented and cannot be deleted");
+    }
+    else
+    {
+      const deleteCar = await myDb.deleteCar(car_id);
+      if (deleteCar && deleteCar.changes == 1) {
+        res.redirect("/carlist/?success=Delete successful");
+      } else {
+        res.redirect("/carlist/?error=Delete failed");
+      }
+    }
+  } catch (err) {
+    next(err);
+  }
+});
+
+
 
 router.post("/bookCar", async (req, res, next) => {
   const book = req.body;
@@ -43,7 +73,6 @@ router.post("/bookCar", async (req, res, next) => {
   const totalCost = bookDays * pricePerDay;
 
   book.total_cost = totalCost;
-  console.log("😁 POST", book);
 
   try {
     const {insertBook, last_id} = await myDb.insertBooking(book);
@@ -53,10 +82,10 @@ router.post("/bookCar", async (req, res, next) => {
       if (addBookingId && addBookingId.changes == 1) {
         const updateavailability = await myDb.updateCarAvailability(book.car_id);
         if (updateavailability && updateavailability.changes == 1) {
-          res.redirect("/carlist/?msg=Boking successful");
+          res.redirect("/carlist/?success=Boking successful");
         }
         else {
-          res.redirect("/carlist/?msg=Booking failed");
+          res.redirect("/carlist/?error=Booking failed");
         }
       }
     }
@@ -69,10 +98,12 @@ router.post("/bookCar", async (req, res, next) => {
 
 router.get("/bookings", async (req, res, next) => {
   const msg = req.query.msg || null;
+  const success = req.query.success || null;
+  const error = req.query.error || null;
   try {
     const bookings = await myDb.getBookingList();
-    // console.log("📚 bookings", bookings);
-    res.render("./pages/bookingList", { bookings , msg });
+    
+    res.render("./pages/bookingList", { bookings , success, error });
   } catch (err) {
     next(err);
   }
@@ -87,9 +118,9 @@ router.post("/bookings/:booking_id/delete", async (req, res, next) => {
     if (makeCarAvailable && makeCarAvailable.changes == 1) {
       const deleteBooking = await myDb.deleteBooking(booking_id);
       if (deleteBooking && deleteBooking.changes == 1) {
-        res.redirect("/bookings/?msg=Delete successful");
+        res.redirect("/bookings/?success=Delete successful");
       } else {
-        res.redirect("/bookings/?msg=Delete failed");
+        res.redirect("/bookings/?error=Delete failed");
       }
     }    
     

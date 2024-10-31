@@ -14,6 +14,18 @@
         </div>
       <% } %>
 
+      <% if (error) { %>
+        <div class="alert alert-danger">
+          <%= error %>
+        </div>
+      <% } %>
+
+      <% if (success) { %>
+        <div class="alert alert-success">
+          <%= success %>
+        </div>
+      <% } %>
+
       <div class="row">
         <div class="col-8">
           <%- include("../components/searchBar.ejs", { query }) %>

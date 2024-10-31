@@ -45,6 +45,43 @@ export async function getCarList(query, page, pageSize) {
   }
 }
 
+export async function getCarById(car_id) {
+  const db = await open({
+    filename: "./db/car_rental.db",
+    driver: sqlite3.Database,
+  });
+
+  const stmt = await db.prepare(`
+    SELECT 
+    Car.car_id, 
+    Car.model, 
+    Car.make, 
+    Car.year, 
+    Car.color, 
+    Car.category, 
+    Car.rental_status, 
+    Price.base_price AS price
+    FROM 
+        Car
+    JOIN 
+        Price ON Car.price_id = Price.price_id
+    WHERE 
+        Car.car_id = @car_id;`
+  );
+
+  const params = {
+    "@car_id": car_id,
+  };
+
+  try {
+    return await stmt.get(params);
+  } finally {
+    await stmt.finalize();
+    db.close();
+  }
+}
+
+
 export async function getCarListCount(query) {
   console.log("getReferences", query);
 
@@ -236,6 +273,7 @@ export async function deleteBooking(booking_id) {
     filename: "./db/car_rental.db",
     driver: sqlite3.Database,
   });
+  db.run("PRAGMA foreign_keys = ON;");
 
   const stmt = await db.prepare(`DELETE FROM Booking
     WHERE booking_id = @booking_id;`);
@@ -243,6 +281,25 @@ export async function deleteBooking(booking_id) {
   try {
     return await stmt.run({
       "@booking_id": booking_id,
+    });
+  } finally {
+    await stmt.finalize();
+    db.close();
+  }
+}
+
+export async function deleteCar(car_id) {
+  const db = await open({
+    filename: "./db/car_rental.db",
+    driver: sqlite3.Database,
+  });
+
+  const stmt = await db.prepare(`DELETE FROM Car
+    WHERE car_id = @car_id;`);
+
+  try {
+    return await stmt.run({
+      "@car_id": car_id,
     });
   } finally {
     await stmt.finalize();
