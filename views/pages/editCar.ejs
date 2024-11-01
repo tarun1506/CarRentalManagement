@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+  <%- include("../templates/head.ejs") %>
+  <body>
+
+    <%- include("../templates/navBar.ejs") %>
+
+    <div class="container mt-5">
+      <h1 class="text-center mb-4">Edit Car Details</h1>
+
+      <%- include("../components/formEditCar.ejs", { car, priceList }) %>  
+    </div>
+    <%- include("../templates/footer.ejs") %>
+  </body>
+</html>

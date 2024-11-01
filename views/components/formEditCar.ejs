@@ -1,0 +1,95 @@
+<form id="editCarForm" method="POST" action="<%= '/carlist/' + car.car_id + '/edit' %>" class="mx-auto" style="max-width: 500px;">
+  <div class="mb-3">
+    <label for="carModel" class="form-label">Model</label>
+    <input
+      type="text"
+      class="form-control"
+      id="carModel"
+      name="model"
+      placeholder="Enter Model"
+      value="<%= car ? car.model : '' %>"
+      readonly
+    />
+  </div>
+
+  <div class="mb-3">
+    <label for="carMake" class="form-label">Make</label>
+    <input
+      type="text"
+      class="form-control"
+      id="carMake"
+      name="make"
+      placeholder="Enter Make"
+      value="<%= car ? car.make : '' %>"
+      readonly
+    />
+  </div>
+
+  <div class="mb-3">
+    <label for="carYear" class="form-label">Year</label>
+    <input
+      type="number"
+      class="form-control"
+      id="carYear"
+      name="year"
+      placeholder="Enter Year"
+      required
+      value="<%= car ? car.year : '' %>"
+    />
+  </div>
+
+  <div class="mb-3">
+    <label for="carColor" class="form-label">Color</label>
+    <input
+      type="text"
+      class="form-control"
+      id="carColor"
+      name="color"
+      placeholder="Enter Color"
+      required
+      value="<%= car ? car.color : '' %>"
+    />
+  </div>
+
+  <div class="mb-3">
+    <label for="carCategory" class="form-label">Category</label>
+    <input
+      type="text"
+      class="form-control"
+      id="carCategory"
+      name="category"
+      placeholder="Enter Category"
+      required
+      value="<%= car ? car.category : '' %>"
+    />
+  </div>
+
+  <div class="mb-3">
+    <label for="carRentalStatus" class="form-label">Rental Status</label>
+    <select
+      class="form-select"
+      id="carRentalStatus"
+      name="rental_status"
+      required
+    >
+      <option value="Available" <%= car && car.rental_status === 'Available' ? 'selected' : '' %>>Available</option>
+      <option value="Maintenance" <%= car && car.rental_status === 'Maintenance' ? 'selected' : '' %>>Maintenance</option>
+    </select>
+  </div>
+
+  <div class = "mb-3">
+    <label for="price" class="form-label">Price ID</label>
+    <select class="form-select" id="price" name="price_id" required>
+      <option value="" disabled selected>Choose a Price</option>
+      <% priceList.forEach(price => { %>
+        <option value="<%= price.price_id %>" <%= car && car.price_id === price.price_id ? 'selected' : '' %>><%= price.price_id + " " + '($' + price.base_price + ')'%></option>
+      <% }); %>
+  </div>
+
+  <input type="hidden" name="car_id" value="<%= car ? car.car_id : '' %>" />
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+  </div>
+</form>

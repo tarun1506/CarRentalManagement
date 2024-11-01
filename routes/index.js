@@ -38,6 +38,49 @@ router.get("/carlist", async (req, res, next) => {
   }
 });
 
+router.get("/carlist/:car_id/edit", async (req, res, next) => {
+  const car_id = req.params.car_id;
+  try {
+    const car = await myDb.getCarById(car_id);
+    const priceList = await myDb.getPriceList();
+    if (car.rental_status == 'Rented')
+    {
+      res.redirect("/carlist/?error=Car is rented and cannot be edited");
+    }
+    else if (car.rental_status == 'Maintenance')
+    {
+      res.redirect("/carlist/?error=Car is under maintenance and cannot be edited");
+    }
+      
+    else
+    {
+      res.render("./pages/editCar", { car, priceList });
+    }
+    
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post("/carlist/:car_id/edit", async (req, res, next) => {
+  const car = req.body;
+  try {
+    if (car.rental_status == 'Maintenance')
+    {
+      const addToMaintenance = await myDb.addToMaintenance(car.car_id);
+    }  
+    const updateCar = await myDb.updateCar(car);
+    if (updateCar && updateCar.changes == 1) {
+      res.redirect("/carlist/?success=Update successful");
+    } else {
+      res.redirect("/carlist/?error=Update failed");
+    }
+  } catch (err) {
+    next(err);
+  }
+
+});
+
 router.get("/carlist/:car_id/delete", async (req, res, next) => {
   const car_id = req.params.car_id;
   try {
@@ -108,6 +151,8 @@ router.get("/bookings", async (req, res, next) => {
     next(err);
   }
 });
+
+
 
 router.post("/bookings/:booking_id/delete", async (req, res, next) => {
   const booking_id = req.params.booking_id;

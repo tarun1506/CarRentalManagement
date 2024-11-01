@@ -59,7 +59,8 @@ export async function getCarById(car_id) {
     Car.year, 
     Car.color, 
     Car.category, 
-    Car.rental_status, 
+    Car.rental_status,
+    Car.price_id,
     Price.base_price AS price
     FROM 
         Car
@@ -131,6 +132,22 @@ export async function getAvailableCars() {
     WHERE 
         Car.rental_status = 'Available';`
   );
+
+  try {
+    return await stmt.all();
+  } finally {
+    await stmt.finalize();
+    db.close();
+  }
+}
+
+export async function getPriceList() {
+  const db = await open({
+    filename: "./db/car_rental.db",
+    driver: sqlite3.Database,
+  });
+
+  const stmt = await db.prepare(`SELECT * FROM Price;`);
 
   try {
     return await stmt.all();
@@ -288,6 +305,42 @@ export async function deleteBooking(booking_id) {
   }
 }
 
+export async function updateCar(car) {
+  const db = await open({
+    filename: "./db/car_rental.db",
+    driver: sqlite3.Database,
+  });
+
+  const stmt = await db.prepare(`UPDATE Car
+    SET
+      model = @model,
+      make = @make,
+      year = @year,
+      color = @color,
+      category = @category,
+      rental_status = @rental_status,
+      price_id = @price_id
+    WHERE
+      car_id = @car_id;`);
+
+  try {
+    return await stmt.run({
+      "@car_id": car.car_id,
+      "@model": car.model,
+      "@make": car.make,
+      "@year": car.year,
+      "@color": car.color,
+      "@category": car.category,
+      "@rental_status": car.rental_status,
+      "@price_id": car.price_id,
+    });
+  } finally {
+    await stmt.finalize();
+    db.close();
+  }
+  
+}
+
 export async function deleteCar(car_id) {
   const db = await open({
     filename: "./db/car_rental.db",
@@ -296,6 +349,25 @@ export async function deleteCar(car_id) {
 
   const stmt = await db.prepare(`DELETE FROM Car
     WHERE car_id = @car_id;`);
+
+  try {
+    return await stmt.run({
+      "@car_id": car_id,
+    });
+  } finally {
+    await stmt.finalize();
+    db.close();
+  }
+}
+
+export async function addToMaintenance(car_id) {
+  const db = await open({
+    filename: "./db/car_rental.db",
+    driver: sqlite3.Database,
+  });
+
+  const stmt = await db.prepare(`INSERT INTO Maintenance_Record(car_id)
+    VALUES (@car_id);`);
 
   try {
     return await stmt.run({
