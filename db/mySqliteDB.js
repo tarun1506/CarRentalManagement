@@ -366,8 +366,8 @@ export async function addToMaintenance(car_id) {
     driver: sqlite3.Database,
   });
 
-  const stmt = await db.prepare(`INSERT INTO Maintenance_Record(car_id)
-    VALUES (@car_id);`);
+  const stmt = await db.prepare(`INSERT INTO Maintenance_Record(car_id, maintenance_type)
+    VALUES (@car_id,"Not Specified");`);
 
   try {
     return await stmt.run({
